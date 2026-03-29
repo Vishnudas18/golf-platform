@@ -72,23 +72,63 @@ const register = asyncHandler(async (req, res) => {
 // @access  Public
 const login = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
+  console.log(`[Login Attempt] Email: ${email}`);
+
+  if (!email || !password) {
+    res.status(400);
+    throw new Error('Please provide email and password');
+  }
 
   const normalizedEmail = email.toLowerCase();
-  const user = await User.findOne({ email: normalizedEmail }).select('+passwordHash');
+  
+  // 1. Database Check
+  let user;
+  try {
+    user = await User.findOne({ email: normalizedEmail }).select('+passwordHash');
+    console.log(`[Login Debug] User found: ${!!user}`);
+  } catch (dbError) {
+    console.error('[Login Error] Database failure:', dbError);
+    res.status(500);
+    throw new Error(`Database connection failed: ${dbError.message}`);
+  }
 
   if (user && (await user.matchPassword(password))) {
-    const accessToken = generateAccessToken(user._id, user.role);
-    const refreshToken = generateRefreshToken(user._id);
+    console.log('[Login Debug] Password matched successfully');
 
-    // Save refresh token to DB without triggering pre-save hooks (prevents double hashing)
-    await User.findByIdAndUpdate(user._id, { refreshToken });
+    // 2. Environment Variables Check
+    if (!process.env.JWT_SECRET || !process.env.JWT_REFRESH_SECRET) {
+      console.error('[Login Error] Missing JWT configuration');
+      res.status(500);
+      throw new Error('Server configuration error: JWT secrets missing');
+    }
 
-    // Set cookie
+    // 3. Token Generation
+    let accessToken, refreshToken;
+    try {
+      accessToken = generateAccessToken(user._id, user.role);
+      refreshToken = generateRefreshToken(user._id);
+      console.log('[Login Debug] Tokens generated successfully');
+    } catch (tokenError) {
+      console.error('[Login Error] Token generation failed:', tokenError);
+      res.status(500);
+      throw new Error(`Token generation failed: ${tokenError.message}`);
+    }
+
+    // 4. Update User with Refresh Token
+    try {
+      await User.findByIdAndUpdate(user._id, { refreshToken });
+    } catch (updateError) {
+      console.error('[Login Error] Failed to update user with refresh token:', updateError);
+      res.status(500);
+      throw new Error('Authentication failed during token update');
+    }
+
+    // 5. Response
     res.cookie('refreshToken', refreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'strict',
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
     successResponse(res, 200, {
@@ -99,6 +139,7 @@ const login = asyncHandler(async (req, res) => {
       accessToken,
     }, 'Logged in successfully');
   } else {
+    console.log('[Login Debug] Invalid credentials');
     res.status(401);
     throw new Error('Invalid email or password');
   }

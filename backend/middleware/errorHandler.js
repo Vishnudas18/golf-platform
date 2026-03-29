@@ -2,6 +2,9 @@ const errorHandler = (err, req, res, next) => {
   let statusCode = res.statusCode === 200 ? 500 : res.statusCode;
   let message = err.message;
 
+  // Log error to console for Vercel debugging
+  console.error(`[Error Handler] ${req.method} ${req.originalUrl}:`, err);
+
   // Handle Mongoose validation errors
   if (err.name === 'ValidationError') {
     statusCode = 400;
