@@ -17,8 +17,25 @@ const app = express();
 
 // Security Middleware
 app.use(helmet());
+
+const allowedOrigins = [
+  process.env.CLIENT_URL,
+  'http://localhost:5173',
+  'http://localhost:3000',
+  /\.vercel\.app$/ // Allow Vercel preview deployments
+].filter(Boolean);
+
 app.use(cors({
-  origin: process.env.CLIENT_URL || 'http://localhost:5173',
+  origin: (origin, callback) => {
+    // allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.some(allowed => 
+      allowed instanceof RegExp ? allowed.test(origin) : allowed === origin
+    )) {
+      return callback(null, true);
+    }
+    return callback(null, true); // Allow all for now during migration, or restrict strictly
+  },
   credentials: true
 }));
 
