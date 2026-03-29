@@ -2,7 +2,7 @@
   "version": 2,
   "builds": [
     {
-      "src": "lambda-api/index.js",
+      "src": "api/index.js",
       "use": "@vercel/node",
       "config": {
         "includeFiles": "backend/**"
@@ -16,14 +16,17 @@
       }
     }
   ],
-  "rewrites": [
+  "routes": [
     {
-      "source": "/api/(.*)",
-      "destination": "/lambda-api/index.js"
+      "src": "/api/(.*)",
+      "dest": "/api/index.js"
     },
     {
-      "source": "/(.*)",
-      "destination": "/index.html"
+      "handle": "filesystem"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
     }
   ]
 }
