@@ -23,13 +23,14 @@ const AdminAnalytics = () => {
     fetchAnalytics();
   }, []);
 
-  if (isLoading || !analytics) return <Loader />;
+  if (isLoading) return <Loader />;
 
+  // Provide default values if analytics data is not yet available or failed to fetch
   const stats = [
     {
       label: 'Gross Revenue',
-      value: formatCurrency(analytics.totalRevenue || 125430),
-      trend: '+12.5%',
+      value: formatCurrency(analytics?.totalRevenue || 0),
+      trend: '+0%',
       up: true,
       icon: CreditCard,
       color: 'text-primary',
@@ -37,8 +38,8 @@ const AdminAnalytics = () => {
     },
     {
       label: 'Active Players',
-      value: (analytics.activeSubscribers || 1542).toLocaleString(),
-      trend: '+8.2%',
+      value: (analytics?.activeSubscribers || 0).toLocaleString(),
+      trend: '+0%',
       up: true,
       icon: Users,
       color: 'text-secondary',
@@ -46,8 +47,8 @@ const AdminAnalytics = () => {
     },
     {
       label: 'Total Impact',
-      value: formatCurrency(analytics.totalImpact || 84250),
-      trend: '+18.4%',
+      value: formatCurrency(analytics?.totalImpact || 0),
+      trend: '+0%',
       up: true,
       icon: Heart,
       color: 'text-danger',
@@ -55,9 +56,9 @@ const AdminAnalytics = () => {
     },
     {
       label: 'Prize Payouts',
-      value: formatCurrency(analytics.totalPrizePaid || 42100),
-      trend: '-2.4%',
-      up: false,
+      value: formatCurrency(analytics?.totalPrizePaid || 0),
+      trend: '+0%',
+      up: true,
       icon: Trophy,
       color: 'text-gold',
       bg: 'bg-gold/10',

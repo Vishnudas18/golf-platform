@@ -15,7 +15,6 @@ import CharityDetailsPage from './pages/CharityDetailsPage';
 import WinnerListPage from './pages/WinnerListPage';
 import SubscriptionPage from './pages/SubscriptionPage';
 import AdminDashboard from './pages/AdminDashboard';
-import AdminPortalPage from './pages/AdminPortalPage';
 
 function App() {
   return (
@@ -31,7 +30,6 @@ function App() {
             <Route path="/charities" element={<CharityListPage />} />
             <Route path="/charities/:slug" element={<CharityDetailsPage />} />
             <Route path="/winners" element={<WinnerListPage />} />
-            <Route path="/admin-portal" element={<AdminPortalPage />} />
 
             {/* Protected Subscriber Routes */}
             <Route
