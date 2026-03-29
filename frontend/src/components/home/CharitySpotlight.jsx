@@ -13,7 +13,7 @@ const CharitySpotlight = () => {
     const fetchFeatured = async () => {
       try {
         const { data } = await charityService.getAllCharities({ featured: true });
-        if (data.length > 0) {
+        if (data && data.length > 0) {
           setFeaturedCharity(data[0]);
         }
       } catch (error) {
