@@ -132,16 +132,26 @@ const LoginPage = () => {
            </Link>
         </p>
 
-        <div className="mt-12 flex items-center justify-center gap-8 opacity-20 grayscale">
-           <div className="flex items-center gap-2">
-              <ShieldCheck size={16} />
-              <span className="text-[10px] font-bold uppercase tracking-widest leading-none">Secure SSL</span>
+        <div className="mt-12 flex flex-col items-center gap-6">
+           <div className="flex items-center justify-center gap-8 opacity-20 grayscale">
+              <div className="flex items-center gap-2">
+                 <ShieldCheck size={16} />
+                 <span className="text-[10px] font-bold uppercase tracking-widest leading-none">Secure SSL</span>
+              </div>
+              <div className="w-px h-6 bg-border" />
+              <div className="flex items-center gap-2">
+                 <Lock size={16} />
+                 <span className="text-[10px] font-bold uppercase tracking-widest leading-none">256-bit AES</span>
+              </div>
            </div>
-           <div className="w-px h-6 bg-border" />
-           <div className="flex items-center gap-2">
-              <Lock size={16} />
-              <span className="text-[10px] font-bold uppercase tracking-widest leading-none">256-bit AES</span>
-           </div>
+
+           <Link 
+              to="/admin-portal" 
+              className="text-[10px] uppercase font-black tracking-[0.3em] text-muted hover:text-gold transition-colors flex items-center gap-2 group"
+           >
+              <ShieldCheck size={12} className="group-hover:rotate-12 transition-transform" />
+              Administrative Access Portal
+           </Link>
         </div>
       </motion.div>
     </div>
